@@ -1,10 +1,10 @@
 f_signal = 0.3;
 f_noise = 0.8;
 
-N = 5000;
+N = 50000;
 n = (0:N-1)';
 s = cos(2*pi*f_signal*n);
-w = 10*cos(2*pi*f_noise*n);
+w = 760*cos(2*pi*f_noise*n);
 
 x = s+w;
 
@@ -15,13 +15,12 @@ r = 0.95;
 mu = 0.0000000002;
 
 for k=10:N-1
+    y(k) = x(k) + a(k)*x(k-1) + x(k-2) - r*a(k)*y(k-1)-r*r*y(k-2);
     a(k+1) = a(k)- mu*y(k)*x(k-1);
     
     if abs(a(k+1)) > 2
         a(k+1) = 0;
-    end
-
-    y(k) = x(k) + a(k)*x(k-1) + x(k-2) - r*a(k)*y(k-1)-r^2*y(k-2);
+    end 
 end
 
 figure(1)
@@ -32,5 +31,5 @@ figure(2)
 stem(n(500:510), y(500:510))
 title('y')
 figure(3)
-plot(n(500:510), a(500:510))
+plot(n, a)
 title('a')
