@@ -10,8 +10,8 @@ N = 50000;
 e = zeros(1,N);
 y = zeros(1,N);
 a = zeros(1,N);
-w = linspace(-pi, pi, N);
-z = exp(1i*w);
+% w = 2*pi/N:2*pi/N:2*pi;
+% z = exp(1i*w);
 
 n = 1:N;
 f_desired = 0.3;
@@ -30,15 +30,11 @@ for i = 3:N-1
     end 
 end
 
-% [H_adaptive, w] = freqz([1 a(end) 1], [1 r*a(end) r^2], 'whole', N);
-% H_adaptive = fftshift(H_adaptive);
-
-H_adaptive = (1+a(end)*z.^(-1)+z.^(-2))./(1+r*a(end)*z.^(-1)+r^2*z.^(-2));
-% H_adaptive = fftshift(H_adaptive)
-
+[H_adaptive, w] = freqz([1 a(end) 1], [1 r*a(end) r^2], 'whole', N);
+H_adaptive = fftshift(H_adaptive);
 % Normalize x axis to radial frequency range between -1 and 1, which 
 % corresponds to radial frequencies of -pi and pi.  
-w = w/pi;  
+w = (w-pi)/(pi);  
 
 subplot(2,1,1)
 plot(w, 20*log10(abs(H_adaptive)))
@@ -54,13 +50,12 @@ hold on;
 plot(w_, abs(H_y));
 xlabel('w (/\pi)'); ylabel('Magnitude');
 legend('Input', 'Output');
-
 % Frequency Responses
 % H_desired = fftshift(fft(desired,N));
 % H_noise = fftshift(fft(noise,N));
 % H_input = fftshift(fft(x,N));
 % H_output = fftshift(fft(y,N));
-% H_adaptive = (1+a(end)*z.^(-1)+z.^(-2))./(1+r*a(end)*z.^(-1)+r^2*z.^(-2))
+% H_adaptive = (1+a(end)*z.^(-1)+z.^(-2))./(1+r*a(end)*z.^(-1)+r^2*z.^(-2));
 % 
 % 
 % % Plot of Desired Signal
@@ -98,6 +93,7 @@ legend('Input', 'Output');
 % ylabel('H_{adaptive}')
 % axis([0,2*pi,0,1.2])
 % 
-
+figure(2)
+plot(a)
 
 
