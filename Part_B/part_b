@@ -5,7 +5,7 @@ M = 20;
 N = 1000000;
 mu = 1E-3;
 SNR = 25;
-omega = linspace(-pi,pi,N);
+w = linspace(-pi,pi,N);
 
 % Initialization of all relevant signals
 s = randi([0,1],1,N)*2-1;
@@ -45,5 +45,5 @@ figure(1)
 plot(1:N,y)
 
 % figure(2)
-% plot(omega,abs(H_equalizer));
+% plot(w,abs(H_equalizer));
 end
