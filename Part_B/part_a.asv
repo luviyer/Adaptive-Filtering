@@ -1,20 +1,20 @@
-clc; clear;
 % Initialization of constants
 L = 4;
 M = 20;
-N = 10000;
-mu = 1E-6;
+N = 1000;
+mu = 1E-3;
 SNR = 25;
-filter_delay = 5;
+filter_delay = 2;
 w = linspace(-pi,pi,N);
 
 % Initialization of all relevant signals
-s = randi([0,1],1,N)*200-100;
+s = randi([0,1],1,N)*2-1;
 h = [0.3,1,0.7,0.3,0.2];
 x = zeros(1,N); y = zeros(1,N); error = zeros(1,N);
 h_filter = zeros(1, M+1);
-h_filter(M/2)=0.5;
+% h_filter(M/2)=0.5;
 
+x_two = conv(s, h);
 % Determine output sequence x[n] for input into FIR adaptive equalizer by
 % performing the convolution of s and h.
 for n = 1:N
@@ -26,24 +26,35 @@ for n = 1:N
     end
     x(n) = channel_output;
 end
-
+% figure(1)
+% plot(x_two(end-10:end));
+% figure(2)
+% plot(x(end-10:end));
 x = awgn(x,SNR);
 
 
 % Determine output sequence y[n] for output of FIR adaptive equalizer
-for n = 21:N
+for n = 45:N
+    equalizer_output = 0;
     for m = 1:M+1
-            y(n) = y(n) + x(n-m+1)*h_filter(m);
+            y(m) = y(m) + x(n-m+1)*h_filter(m);
     end
     
     error(n) = s(n-filter_delay) - y(n);
     
     for m=1:M+1
-        h_filter(m) = h_filter(m) + mu*error(n)*x(n-m+1);
+        h_filter = h_filter + 2*mu*error(n)*x(n-m+1);
     end
 end
 
+plot(x(end-20):x)
+% Frequency Responses
+H_channel = fftshift(fft(h,N));
+H_equalizer = fftshift(fft(a(:,end),N));
 
-plot(error)
+% figure(1)
+% plot(1:N,y)
 
+% figure(2)
+% plot(w,abs(H_equalizer));
 
