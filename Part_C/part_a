@@ -1,0 +1,47 @@
+function LMS_filter_design_1()
+% Initialization of constants
+M = 17;
+mu = 0.01;
+load('test_sequence');
+w = linspace(-pi,pi,K);
+
+% Initialization of signals 
+y = zeros(1,K);
+e = zeros(1,K);
+a = zeros(1,M+1);
+Hd_magn = zeros(1,K);
+
+% Initialization of Desired Magnitude Response 
+for i = 1:K
+    if (x_in(i)>=0 && x_in(i)<=0.15)
+        Hd_magn(i) = 2;
+    elseif (x_in(i)>0.15 && x_in(i)<=0.30)
+        Hd_magn(i) = 0;    
+    else
+        Hd_magn(i) = 1;
+    end
+end
+% Determination of desired training signal xd(n)
+X_in = fft(x_in,K);                 % Get the FFT of x_in
+Xd_magn = Hd_magn.*abs(X_in);       % Magnitude Scaling using Hd_magn
+Xd_phase = w;                       % Phase Shifting using Linear Phase
+Xd = Xd_magn.*exp(1i*Xd_phase);     % Acquire desired FFT
+xd = ifft(Xd,K);                    % Acquire desired iFFT, i.e. the signal
+
+for n = M+1:K
+    for m = 1:M+1
+        y(n) = y(n) + x_in(n-m+1)*a(m);
+    end
+    e(n) = xd(n-2)-y(n);
+    for m = 1:M+1
+        a(m) = a(m)+mu*e(n)*x_in(n-m+1);
+    end
+end
+figure(1)
+stem(1:M+1,real(a))
+xlim([0,M+2])
+
+figure(2)
+plot(w,abs(fftshift(fft(a,K))));
+xlim([w(1),w(end)]);
+end
