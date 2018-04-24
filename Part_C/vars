@@ -1,0 +1,12 @@
+f = 0.5;
+L = 1000;
+K = 1000000;
+x_in = zeros(1,K);
+
+freq = f*rand(1,L);
+for i = 1:K
+    rand_index = randi([1,L],1);
+    x_in(i) = freq(rand_index);
+end
+
+save('test_sequence');
